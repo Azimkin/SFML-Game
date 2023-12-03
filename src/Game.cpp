@@ -6,13 +6,14 @@
 #define PI 3,1415926535
 
 Game::Game() :
-        window(VideoMode(800, 800), "Game"),
+        window(VideoMode(800, 600), "Game", Style::Close | Style::Titlebar),
         player(),
         scene(0),
         isEscapePressed(false),
         isPause(true),
         playButton(),
-        fpsCounter()
+        fpsCounter(),
+        enemies()
 {
     window.setVerticalSyncEnabled(true);
     playButton.setFillColor(Color::White);
@@ -123,19 +124,37 @@ void Game::update(Time deltaTime)
             if (player.isLeftPressed)
             {
                 player.isLeftPressed = false;
-                player.bullets.push_back(Bullet(player.model.getPosition().x,
-                                                player.model.getPosition().y, rotation));
-                cout << "Bullet spawned!\n";
+                player.bullets.emplace_back(player.model.getPosition().x, player.model.getPosition().y, rotation);
             }
 
             for (int i = 0; i < player.bullets.size(); i++)
             {
                 player.bullets[i].move(player.bullets[i].velocity * deltaTime.asSeconds());
+                if (player.bullets[i].getPosition().x < 0
+                || player.bullets[i].getPosition().y < 0
+                || player.bullets[i].getPosition().x > window.getSize().x
+                || player.bullets[i].getPosition().y > window.getSize().y)
+                    player.bullets.erase(player.bullets.begin() + i);
+            }
+
+            for (int i = 0; i < enemies.size(); i++)
+            {
+                for(int j = 0; j < player.bullets.size(); j++)
+                {
+                    if (enemies[i].getGlobalBounds().contains(player.bullets[j].getPosition()))
+                    {
+                        enemies[i].damage(20);
+                        cout << "Enemy " << i << " damaged! (" << enemies[i].getHealth() << "hp)" << endl;
+                        player.bullets.erase(player.bullets.begin() + j);
+                        if (enemies[i].getHealth() <= 0) {
+                            enemies.erase(enemies.begin() + i);
+                            cout << "Enemy " << i << " destroyed!" << endl;
+                        }
+                    }
+                }
             }
             break;
     }
-
-
 }
 
 void Game::render()
@@ -154,6 +173,10 @@ void Game::render()
             {
                 window.draw(player.bullets[i]);
             }
+            for (int i = 0; i < enemies.size(); i++)
+            {
+                window.draw(enemies[i]);
+            }
     }
 
     window.display();
@@ -171,7 +194,11 @@ void Game::handlePlayerInput(Keyboard::Key key, bool isPressed)
         player.isMovingDown = isPressed;
     else if (key == Keyboard::D)
         player.isMovingRight = isPressed;
-    isEscapePressed = isPressed;
+    else if (key == Keyboard::Escape)
+        isEscapePressed = isPressed;
+    else if (key == Keyboard::F) {
+        enemies.push_back(Enemy(rand() % 800, rand() % 600));
+    }
 }
 
 void Game::handleMouseInput(Mouse::Button button, bool isPressed)

@@ -7,9 +7,11 @@
 
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <random>
 
 #include "Player.h"
 #include "FrameCounter.h"
+#include "Enemy.h"
 
 using namespace std;
 using namespace sf;
@@ -23,6 +25,7 @@ private:
     size_t scene;
     RectangleShape playButton;
     FrameCounter fpsCounter;
+    vector<Enemy> enemies;
 
 
     void processEvents();

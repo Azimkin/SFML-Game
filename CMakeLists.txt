@@ -18,7 +18,9 @@ add_executable(SFMLGame src/main.cpp
         src/FrameCounter.cpp
         src/FrameCounter.h
         src/Bullet.cpp
-        src/Bullet.h)
+        src/Bullet.h
+        src/Enemy.cpp
+        src/Enemy.h)
 target_link_libraries(SFMLGame PRIVATE sfml-graphics)
 target_compile_features(SFMLGame PRIVATE cxx_std_17)
 
