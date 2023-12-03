@@ -17,6 +17,9 @@ class Player
 {
 private:
     Texture texture;
+    short points;
+    int health;
+    bool isAlive;
 
 public:
     std::vector<Bullet> bullets;
@@ -29,6 +32,17 @@ public:
             isLeftPressed;
     CircleShape model;
 
+    void addPoint();
+
+    short getPoints();
+
+    void damage(short damage);
+
+    bool isDead();
+
+    int getHealth();
+
     Player();
 };
+
 #endif //SFMLGAME_PLAYER_H

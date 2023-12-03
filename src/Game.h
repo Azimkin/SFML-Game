@@ -26,7 +26,12 @@ private:
     RectangleShape playButton;
     FrameCounter fpsCounter;
     vector<Enemy> enemies;
-
+    Font font;
+    Text pauseText;
+    Clock mobSpawnCooldown;
+    float mobCD;
+    Text points;
+    Text playButtonText;
 
     void processEvents();
 

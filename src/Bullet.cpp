@@ -8,7 +8,7 @@ Bullet::Bullet(float x, float y, float rotation) : angle(rotation),
                                                    velocity(), speed(1000)
 {
     setSize(sf::Vector2f(10, 20));
-    setFillColor(sf::Color::Green);
+    setFillColor(sf::Color::Yellow);
     setOrigin(5, 10);
     setRotation(rotation);
     setPosition(x, y);

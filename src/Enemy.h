@@ -7,6 +7,9 @@
 
 #include "SFML/Graphics.hpp"
 #include "vector"
+#include <cmath>
+
+#include "Player.h"
 
 class Enemy : public sf::CircleShape
         {
@@ -14,6 +17,9 @@ private:
     int health;
     sf::Clock cooldown;
     bool isDead;
+    float speed;
+    sf::Clock damageCooldown;
+
 public:
     Enemy(short x, short y);
 
@@ -21,7 +27,11 @@ public:
 
     int getHealth();
 
+    void moveToPlayer(sf::Vector2f playerPosition, sf::Time deltaTime);
+
     void damage(short damage);
+
+    void damagePlayer(Player& player);
 };
 
 
