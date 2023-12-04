@@ -12,6 +12,8 @@
 #include "Player.h"
 #include "FrameCounter.h"
 #include "Enemy.h"
+#include "scenes/MainMenu.h"
+#include "utilities/Logger.h"
 
 using namespace std;
 using namespace sf;
@@ -21,9 +23,6 @@ class Game
 private:
     RenderWindow window;
     Player player;
-    bool isEscapePressed, isPause;
-    size_t scene;
-    RectangleShape playButton;
     FrameCounter fpsCounter;
     vector<Enemy> enemies;
     Font font;
@@ -31,7 +30,8 @@ private:
     Clock mobSpawnCooldown;
     float mobCD;
     Text points;
-    Text playButtonText;
+    MainMenu mainMenu;
+
 
     void processEvents();
 
@@ -42,6 +42,8 @@ private:
     void handlePlayerInput(Keyboard::Key key, bool isPressed);
 
     void handleMouseInput(Mouse::Button button, bool isPressed);
+
+
 
 public:
     Game();

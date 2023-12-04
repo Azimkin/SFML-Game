@@ -20,6 +20,7 @@ private:
     short points;
     int health;
     bool isAlive;
+    size_t scene;
 
 public:
     std::vector<Bullet> bullets;
@@ -29,7 +30,9 @@ public:
             isMovingDown,
             isMovingRight,
             isSpace,
-            isLeftPressed;
+            isLeftPressed,
+            isPause,
+            isEscapePressed;
     CircleShape model;
 
     void addPoint();
@@ -41,6 +44,10 @@ public:
     bool isDead();
 
     int getHealth();
+
+    size_t getScene();
+
+    void setScene(size_t scene_);
 
     Player();
 };

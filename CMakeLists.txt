@@ -20,7 +20,11 @@ add_executable(SFMLGame src/main.cpp
         src/Bullet.cpp
         src/Bullet.h
         src/Enemy.cpp
-        src/Enemy.h)
+        src/Enemy.h
+        src/scenes/MainMenu.cpp
+        src/scenes/MainMenu.h
+        src/utilities/Logger.cpp
+        src/utilities/Logger.h)
 target_link_libraries(SFMLGame PRIVATE sfml-graphics)
 target_compile_features(SFMLGame PRIVATE cxx_std_17)
 

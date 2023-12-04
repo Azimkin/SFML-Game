@@ -8,10 +8,6 @@
 Game::Game() :
         window(VideoMode(800, 600), "Game", Style::Close | Style::Titlebar),
         player(),
-        scene(0),
-        isEscapePressed(false),
-        isPause(true),
-        playButton(),
         fpsCounter(),
         enemies(),
         font(),
@@ -19,15 +15,11 @@ Game::Game() :
         mobSpawnCooldown(),
         mobCD(5.0f),
         points(),
-        playButtonText()
+        mainMenu(font, window)
 {
     window.setVerticalSyncEnabled(true);
-    playButton.setFillColor(Color::White);
-    playButton.setSize(Vector2f(200, 50));
-    playButton.setOrigin(100, 25);
-    playButton.setPosition(window.getSize().x / 2, window.getSize().y / 2);
     if (!font.loadFromFile("assets/font/Aguante-Regular.otf")) {
-        cout << "Can't load font!" << endl;
+        Logger::logE("Can't load font!");
     }
     pauseText.setFont(font);
     pauseText.setFillColor(Color::Cyan);
@@ -38,18 +30,12 @@ Game::Game() :
     points.setFont(font);
     points.setFillColor(Color::Red);
     points.setCharacterSize(30);
-
-    playButtonText.setPosition(playButton.getPosition());
-    playButtonText.setFont(font);
-    playButtonText.setFillColor(Color::Black);
-    playButtonText.setString("Play");
-    playButtonText.setCharacterSize(20);
 }
 
 void Game::run()
 {
     Clock clock;
-    cout << "Window opened\n";
+    Logger::log("Window opened");
     while (window.isOpen())
     {
         Time deltaTime = clock.restart();
@@ -73,7 +59,7 @@ void Game::processEvents()
                 handlePlayerInput(event.key.code, false);
                 break;
             case Event::Closed:
-                cout << "Window closed\n";
+                Logger::log("Window closed");
                 window.close();
                 break;
             case Event::MouseButtonPressed:
@@ -88,27 +74,16 @@ void Game::processEvents()
 
 void Game::update(Time deltaTime)
 {
-    switch (scene)
+    switch (player.getScene())
     {
         case 0:
-            if (player.isLeftPressed)
-            {
-                player.isLeftPressed = false;
-                sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-                if (playButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePosition)))
-                {
-                    // Ваш код для обработки клика на объекте
-                    std::cout << "Play button clicked!" << std::endl;
-                    scene = 1;
-                    isPause = false;
-                }
-            }
+            mainMenu.update(player, window);
             break;
         case 1:
-            if (!isPause) {
+            if (!player.isPause) {
                 if (player.isDead())
                 {
-                    scene = 2;
+                    player.setScene(2);
                     break;
                 }
                 int speed = 500;
@@ -146,7 +121,7 @@ void Game::update(Time deltaTime)
                 {
                     short x = rand() % 800, y = rand() % 600;
                     enemies.push_back(Enemy(x, y));
-                    cout << "Enemy spawned!" << endl;
+                    Logger::logD("Enemy spawned");
                     mobSpawnCooldown.restart();
                 }
 
@@ -175,7 +150,7 @@ void Game::update(Time deltaTime)
                             player.bullets.erase(player.bullets.begin() + j);
                             if (enemies[i].getHealth() <= 0) {
                                 enemies.erase(enemies.begin() + i);
-                                cout << "Enemy " << " destroyed!" << endl;
+                                Logger::logD("Enemy destroyed!");
                                 player.addPoint();
                                 if (mobCD > 0.6f) {
                                     mobCD -= 0.1f;
@@ -187,34 +162,31 @@ void Game::update(Time deltaTime)
 
                 points.setString("P: " + to_string(player.getPoints()) + "  Health: " + to_string(player.getHealth()));
             }
-            if (isEscapePressed && !isPause)
+            if (player.isEscapePressed && !player.isPause)
             {
-                isEscapePressed = false;
-                isPause = true;
+                player.isEscapePressed = false;
+                player.isPause = true;
             }
-            else if (isPause && isEscapePressed)
+            else if (player.isPause && player.isEscapePressed)
             {
-                isPause = false;
-                isEscapePressed = false;
+                player.isPause = false;
+                player.isEscapePressed = false;
             }
             break;
         default:
-            scene = 0;
+            player.setScene(0);
     }
 }
 
 void Game::render()
 {
-
-    switch (scene)
+    switch (player.getScene())
     {
         case 0:
-            window.clear(Color::Blue);
-            window.draw(playButton);
-            window.draw(playButtonText);
+            mainMenu.render(window);
             break;
         case 1:
-            window.clear();
+            window.clear(Color::Cyan);
             window.draw(player.model);
             window.draw(points);
             for (int i = 0; i < player.bullets.size(); i++)
@@ -225,7 +197,7 @@ void Game::render()
             {
                 window.draw(enemies[i]);
             }
-            if (isPause) {
+            if (player.isPause) {
                 window.draw(pauseText);
             }
     }
@@ -246,7 +218,7 @@ void Game::handlePlayerInput(Keyboard::Key key, bool isPressed)
     else if (key == Keyboard::D)
         player.isMovingRight = isPressed;
     else if (key == Keyboard::Escape)
-        isEscapePressed = isPressed;
+        player.isEscapePressed = isPressed;
 }
 
 void Game::handleMouseInput(Mouse::Button button, bool isPressed)
